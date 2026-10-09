@@ -1,0 +1,1328 @@
+<!DOCTYPE html>
+<html lang="id" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GeoSpace - Media Pembelajaran Kesebangunan & Kekongruenan SMP Kelas IX</title>
+    
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Google Fonts (Fredoka & Nunito for vibrant modern UI) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+    
+    <style>
+        /* Custom UI Styles & Animations */
+        body {
+            font-family: 'Nunito', sans-serif;
+            background-color: #0b0d1e;
+            color: #f3f4f6;
+            overflow-x: hidden;
+        }
+        
+        h1, h2, h3, h4, .font-heading {
+            font-family: 'Fredoka', cursive, sans-serif;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 10px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0b0d1e;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #6366f1;
+            border-radius: 5px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #818cf8;
+        }
+
+        /* Floating and 3D Rotating Animations */
+        @keyframes float-robot {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-12px) rotate(2deg); }
+        }
+
+        @keyframes rotate-3d-shape {
+            0% { transform: rotateX(0deg) rotateY(0deg) rotateZ(0deg); }
+            50% { transform: rotateX(180deg) rotateY(180deg) rotateZ(90deg); }
+            100% { transform: rotateX(360deg) rotateY(360deg) rotateZ(360deg); }
+        }
+
+        @keyframes pulse-glow-amber {
+            0%, 100% { box-shadow: 0 0 15px rgba(245, 158, 11, 0.4); }
+            50% { box-shadow: 0 0 35px rgba(245, 158, 11, 0.8); }
+        }
+
+        .animate-robot {
+            animation: float-robot 4s ease-in-out infinite;
+        }
+
+        .animate-glow {
+            animation: pulse-glow-amber 2.5s infinite;
+        }
+
+        /* Glassmorphism Cards */
+        .glass-card {
+            background: rgba(22, 27, 59, 0.8);
+            backdrop-filter: blur(14px);
+            border: 2px solid rgba(255, 255, 255, 0.12);
+        }
+
+        .glass-card-hover {
+            transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        .glass-card-hover:hover {
+            transform: translateY(-6px) scale(1.02);
+            border-color: rgba(245, 158, 11, 0.6);
+            box-shadow: 0 20px 35px -10px rgba(99, 102, 241, 0.4);
+        }
+
+        /* Navigation Tab Styling */
+        .nav-btn {
+            transition: all 0.3s ease;
+        }
+        .nav-btn.active {
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+            color: #0b0d1e;
+            box-shadow: 0 4px 18px rgba(245, 158, 11, 0.5);
+            font-weight: 800;
+            transform: scale(1.05);
+        }
+
+        /* Drag and Drop Zone Highlights */
+        .drag-item {
+            cursor: grab;
+            user-select: none;
+            touch-action: none;
+        }
+        .drag-item:active {
+            cursor: grabbing;
+        }
+        .drop-zone.over {
+            border-color: #f59e0b;
+            background-color: rgba(245, 158, 11, 0.25);
+            transform: scale(1.02);
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col relative selection:bg-amber-400 selection:text-slate-950">
+
+    <!-- Starfield Canvas Background -->
+    <canvas id="starfield" class="fixed top-0 left-0 w-full h-full pointer-events-none z-0"></canvas>
+
+    <!-- Navigation Header -->
+    <header class="sticky top-0 z-50 px-4 py-3 bg-slate-950/85 backdrop-blur-md border-b border-indigo-900/60 shadow-xl">
+        <div class="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-3">
+            
+            <!-- Logo & Brand -->
+            <div class="flex items-center space-x-3 cursor-pointer" onclick="switchTab('home')">
+                <div class="w-11 h-11 rounded-2xl bg-gradient-to-tr from-amber-400 via-indigo-600 to-purple-600 flex items-center justify-center text-white shadow-lg text-xl">
+                    <i class="fa-solid fa-shapes animate-spin" style="animation-duration: 12s;"></i>
+                </div>
+                <div>
+                    <h1 class="text-xl md:text-2xl font-black text-transparent bg-clip-text bg-gradient-to-r from-amber-300 via-indigo-200 to-amber-400 tracking-wide">
+                        GeoSpace IX
+                    </h1>
+                    <p class="text-xs text-indigo-300 font-bold">Kesebangunan & Kekongruenan • SMP IX</p>
+                </div>
+            </div>
+
+            <!-- Sound Toggle Button -->
+            <button id="soundToggleBtn" onclick="toggleAudio()" class="px-3 py-1.5 rounded-xl bg-indigo-900/70 border border-indigo-700 text-amber-300 text-xs font-bold flex items-center gap-2 hover:bg-indigo-800 transition-colors">
+                <i id="soundIcon" class="fa-solid fa-volume-high"></i>
+                <span class="hidden sm:inline">Suara</span>
+            </button>
+
+            <!-- Navigation Links -->
+            <nav class="w-full md:w-auto overflow-x-auto pb-1 md:pb-0">
+                <div class="flex items-center justify-start md:justify-end gap-2 min-w-max">
+                    <button onclick="switchTab('home')" id="nav-home" class="nav-btn active px-4 py-2 rounded-xl text-sm font-bold flex items-center gap-2 text-slate-200 hover:bg-indigo-900/50">
+                        <i class="fa-solid fa-house text-amber-400"></i> Home
+                    </button>
+                    <button onclick="switchTab('tujuan')" id="nav-tujuan" class="nav-btn px-4 py-2 rounded-xl text-sm font-bold flex items-center gap-2 text-slate-200 hover:bg-indigo-900/50">
+                        <i class="fa-solid fa-bullseye text-amber-400"></i> Tujuan
+                    </button>
+                    <button onclick="switchTab('materi')" id="nav-materi" class="nav-btn px-4 py-2 rounded-xl text-sm font-bold flex items-center gap-2 text-slate-200 hover:bg-indigo-900/50">
+                        <i class="fa-solid fa-book-open text-amber-400"></i> Materi
+                    </button>
+                    <button onclick="switchTab('kuis')" id="nav-kuis" class="nav-btn px-4 py-2 rounded-xl text-sm font-bold flex items-center gap-2 text-slate-200 hover:bg-indigo-900/50">
+                        <i class="fa-solid fa-gamepad text-amber-400"></i> Kuis Interaktif
+                    </button>
+                    <button onclick="switchTab('dragdrop')" id="nav-dragdrop" class="nav-btn px-4 py-2 rounded-xl text-sm font-bold flex items-center gap-2 text-slate-200 hover:bg-indigo-900/50">
+                        <i class="fa-solid fa-puzzle-piece text-amber-400"></i> Drag & Drop
+                    </button>
+                    <button onclick="switchTab('tentang')" id="nav-tentang" class="nav-btn px-4 py-2 rounded-xl text-sm font-bold flex items-center gap-2 text-slate-200 hover:bg-indigo-900/50">
+                        <i class="fa-solid fa-robot text-amber-400"></i> Tentang
+                    </button>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Main Content Area -->
+    <main class="flex-grow z-10 max-w-7xl w-full mx-auto p-4 md:p-6">
+
+        <!-- ================= TAB 1: HOME ================= -->
+        <section id="tab-home" class="tab-content block space-y-8 py-4">
+            
+            <!-- Hero Banner with Cyber Robot Mascot -->
+            <div class="relative overflow-hidden rounded-3xl glass-card p-6 md:p-10 border-indigo-500/30 flex flex-col md:flex-row items-center justify-between gap-8">
+                <div class="absolute -top-24 -right-24 w-96 h-96 bg-amber-500/10 rounded-full blur-3xl pointer-events-none"></div>
+                <div class="absolute -bottom-24 -left-24 w-96 h-96 bg-indigo-500/20 rounded-full blur-3xl pointer-events-none"></div>
+
+                <div class="space-y-5 max-w-2xl text-center md:text-left z-10">
+                    <span class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-amber-400/15 border border-amber-400/40 text-amber-300 text-xs font-bold uppercase tracking-wider">
+                        <i class="fa-solid fa-atom text-amber-400"></i> Media Pembelajaran Matematika SMP Kelas 9
+                    </span>
+                    <h2 class="text-3xl md:text-5xl font-extrabold text-white leading-tight">
+                        Eksplorasi Geometry Antariksa: <br>
+                        <span class="text-transparent bg-clip-text bg-gradient-to-r from-amber-300 via-amber-400 to-indigo-300">
+                            Kesebangunan & Kekongruenan
+                        </span>
+                    </h2>
+                    <p class="text-base md:text-lg text-slate-300 leading-relaxed">
+                        Halo Cadet Matematika! Bersama <strong class="text-amber-300">GeoBot-9</strong>, mari pelajari prinsip perubahan skala, rasio panjang sisi, dan kesamaan bangun datar melalui simulasi visual interaktif!
+                    </p>
+                    <div class="flex flex-wrap items-center justify-center md:justify-start gap-4 pt-2">
+                        <button onclick="switchTab('materi')" class="px-8 py-4 rounded-2xl bg-gradient-to-r from-amber-400 to-amber-600 hover:from-amber-500 hover:to-amber-700 text-slate-950 font-extrabold text-lg shadow-xl hover:shadow-amber-500/30 transform hover:-translate-y-1 transition-all flex items-center gap-3">
+                            <i class="fa-solid fa-play"></i> Mulai Pembelajaran
+                        </button>
+                        <button onclick="switchTab('kuis')" class="px-6 py-4 rounded-2xl bg-indigo-900/60 hover:bg-indigo-800/80 border border-indigo-500/40 text-white font-bold text-base transition-all flex items-center gap-2">
+                            <i class="fa-solid fa-gamepad"></i> Uji Kemampuan
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Animated Interactive Space Robot (SVG) -->
+                <div class="relative w-64 h-64 md:w-80 md:h-80 flex items-center justify-center flex-shrink-0">
+                    <div class="absolute inset-0 bg-gradient-to-tr from-amber-500/20 to-indigo-600/30 rounded-full blur-2xl animate-pulse"></div>
+                    <div class="animate-robot relative z-10">
+                        <!-- Custom Cyber Math Robot SVG -->
+                        <svg class="w-60 h-60 md:w-72 md:h-72 drop-shadow-[0_15px_25px_rgba(0,0,0,0.6)]" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <!-- Antenna -->
+                            <line x1="100" y1="35" x2="100" y2="15" stroke="#F59E0B" stroke-width="4" stroke-linecap="round"/>
+                            <circle cx="100" cy="12" r="6" fill="#F59E0B" class="animate-ping"/>
+                            <circle cx="100" cy="12" r="6" fill="#FBBF24"/>
+                            
+                            <!-- Head -->
+                            <rect x="60" y="35" width="80" height="55" rx="16" fill="#1E1B4B" stroke="#6366F1" stroke-width="3"/>
+                            <!-- Visor Screen -->
+                            <rect x="68" y="43" width="64" height="39" rx="10" fill="#090D16"/>
+                            <!-- Digital Eyes -->
+                            <ellipse cx="84" cy="62" rx="7" ry="9" fill="#38BDF8"/>
+                            <ellipse cx="116" cy="62" rx="7" ry="9" fill="#38BDF8"/>
+                            <circle cx="86" cy="60" r="2.5" fill="white"/>
+                            <circle cx="118" cy="60" r="2.5" fill="white"/>
+                            <path d="M 92 73 Q 100 78 108 73" stroke="#F59E0B" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+
+                            <!-- Body -->
+                            <rect x="55" y="98" width="90" height="70" rx="20" fill="#312E81" stroke="#818CF8" stroke-width="3"/>
+                            <!-- Core Screen with Floating Geometric Shapes -->
+                            <rect x="70" y="108" width="60" height="50" rx="12" fill="#0C0F24"/>
+                            <!-- Mini Triangle & Square inside Screen -->
+                            <polygon points="100,115 85,140 115,140" fill="none" stroke="#F59E0B" stroke-width="2"/>
+                            <rect x="92" y="125" width="16" height="16" fill="none" stroke="#38BDF8" stroke-width="2"/>
+
+                            <!-- Arms with Geometry Tools -->
+                            <path d="M 55 115 L 35 135 L 25 125" stroke="#818CF8" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
+                            <circle cx="23" cy="123" r="7" fill="#F59E0B"/>
+                            
+                            <path d="M 145 115 L 165 135 L 175 125" stroke="#818CF8" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
+                            <circle cx="177" cy="123" r="7" fill="#38BDF8"/>
+
+                            <!-- Thruster Bottom -->
+                            <rect x="85" y="170" width="30" height="10" rx="4" fill="#475569"/>
+                            <path d="M 90 180 L 100 198 L 110 180 Z" fill="#F59E0B"/>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Highlights Grid -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div onclick="switchTab('materi')" class="glass-card glass-card-hover p-6 rounded-2xl cursor-pointer border-indigo-800/50 flex items-center gap-4">
+                    <div class="w-14 h-14 rounded-2xl bg-amber-500/20 border border-amber-400/40 flex items-center justify-center text-amber-300 text-2xl flex-shrink-0">
+                        <i class="fa-solid fa-calculator"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-xl font-bold text-white">Materi Interaktif</h3>
+                        <p class="text-sm text-slate-300">Pahami konsep rasio, skala, serta syarat segitiga kongruen secara visual.</p>
+                    </div>
+                </div>
+
+                <div onclick="switchTab('kuis')" class="glass-card glass-card-hover p-6 rounded-2xl cursor-pointer border-indigo-800/50 flex items-center gap-4">
+                    <div class="w-14 h-14 rounded-2xl bg-purple-500/20 border border-purple-400/40 flex items-center justify-center text-purple-300 text-2xl flex-shrink-0">
+                        <i class="fa-solid fa-trophy"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-xl font-bold text-white">Kuis Antariksa</h3>
+                        <p class="text-sm text-slate-300">Uji kemampuan matematika dengan audio feedback pembawaan pria yang jelas.</p>
+                    </div>
+                </div>
+
+                <div onclick="switchTab('dragdrop')" class="glass-card glass-card-hover p-6 rounded-2xl cursor-pointer border-indigo-800/50 flex items-center gap-4">
+                    <div class="w-14 h-14 rounded-2xl bg-emerald-500/20 border border-emerald-400/40 flex items-center justify-center text-emerald-300 text-2xl flex-shrink-0">
+                        <i class="fa-solid fa-puzzle-piece"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-xl font-bold text-white">Permainan Klasifikasi</h3>
+                        <p class="text-sm text-slate-300">Kelompokkan pasangan bangun datar ke dalam zona Kongruen atau Sebangun.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ================= TAB 2: TUJUAN PEMBELAJARAN ================= -->
+        <section id="tab-tujuan" class="tab-content hidden space-y-6 py-4">
+            <div class="text-center max-w-2xl mx-auto space-y-2">
+                <span class="px-4 py-1 rounded-full bg-amber-400/15 text-amber-300 text-xs font-bold border border-amber-400/30">
+                    Kurikulum Merdeka - Fase D
+                </span>
+                <h2 class="text-3xl md:text-4xl font-bold text-white">Tujuan Pembelajaran</h2>
+                <p class="text-slate-300">Capaian & indikator pembelajaran Matematika SMP Kelas IX pada materi Geometri.</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-5xl mx-auto">
+                
+                <div class="glass-card p-6 rounded-2xl border-indigo-500/20 flex gap-4 items-start">
+                    <div class="w-12 h-12 rounded-xl bg-amber-400 text-slate-950 flex items-center justify-center text-xl font-black flex-shrink-0 shadow-md">
+                        1
+                    </div>
+                    <div class="space-y-1">
+                        <h3 class="text-xl font-bold text-amber-300">Memahami Konsep Kesebangunan</h3>
+                        <p class="text-slate-300 leading-relaxed text-sm">
+                            Siswa dapat mengidentifikasi dua bangun datar yang sebangun dengan memeriksa kesamaan sudut-sudut yang bersesuaian dan perbandingan sisi-sisi yang bersesuaian senilai.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="glass-card p-6 rounded-2xl border-indigo-500/20 flex gap-4 items-start">
+                    <div class="w-12 h-12 rounded-xl bg-indigo-500 text-white flex items-center justify-center text-xl font-black flex-shrink-0 shadow-md">
+                        2
+                    </div>
+                    <div class="space-y-1">
+                        <h3 class="text-xl font-bold text-indigo-300">Memahami Kekongruenan</h3>
+                        <p class="text-slate-300 leading-relaxed text-sm">
+                            Siswa dapat menjelaskan syarat dua bangun datar dikatakan kongruen (bentuk dan ukuran persis sama, rasio skala $k = 1$).
+                        </p>
+                    </div>
+                </div>
+
+                <div class="glass-card p-6 rounded-2xl border-indigo-500/20 flex gap-4 items-start">
+                    <div class="w-12 h-12 rounded-xl bg-emerald-400 text-slate-950 flex items-center justify-center text-xl font-black flex-shrink-0 shadow-md">
+                        3
+                    </div>
+                    <div class="space-y-1">
+                        <h3 class="text-xl font-bold text-emerald-300">Syarat Kekongruenan Segitiga</h3>
+                        <p class="text-slate-300 leading-relaxed text-sm">
+                            Siswa mampu menganalisis kekongruenan dua segitiga berdasarkan kriteria khusus: Sisi-Sisi-Sisi (s-s-s), Sisi-Sudut-Sisi (s-sd-s), Sudut-Sisi-Sudut (sd-s-sd).
+                        </p>
+                    </div>
+                </div>
+
+                <div class="glass-card p-6 rounded-2xl border-indigo-500/20 flex gap-4 items-start">
+                    <div class="w-12 h-12 rounded-xl bg-purple-400 text-slate-950 flex items-center justify-center text-xl font-black flex-shrink-0 shadow-md">
+                        4
+                    </div>
+                    <div class="space-y-1">
+                        <h3 class="text-xl font-bold text-purple-300">Pemecahan Masalah Kontekstual</h3>
+                        <p class="text-slate-300 leading-relaxed text-sm">
+                            Siswa dapat menyelesaikan soal kehidupan nyata seperti menghitung tinggi gedung/pohon menggunakan metode bayangan segitiga sebangun.
+                        </p>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Quote Banner -->
+            <div class="max-w-3xl mx-auto glass-card p-6 rounded-2xl border-amber-400/30 text-center bg-gradient-to-r from-amber-500/10 via-indigo-500/10 to-purple-500/10">
+                <i class="fa-solid fa-quote-left text-amber-400 text-3xl mb-2"></i>
+                <p class="text-lg font-semibold text-amber-200">
+                    "Matematika mengajarkan kita bahwa perubahan skala tidak mengubah bentuk hakiki dasar kita, hanya ukuran langkah kita!"
+                </p>
+            </div>
+        </section>
+
+        <!-- ================= TAB 3: MATERI INTERAKTIF ================= -->
+        <section id="tab-materi" class="tab-content hidden space-y-8 py-4">
+            
+            <div class="text-center max-w-3xl mx-auto space-y-2">
+                <h2 class="text-3xl md:text-4xl font-bold text-white">Materi & Simulasi Geometri</h2>
+                <p class="text-slate-300">Pelajari perbedaan mendasar Kesebangunan ($\sim$) dan Kekongruenan ($\cong$) melalui alat peraga interaktif!</p>
+            </div>
+
+            <!-- Sub Navigation Tabs for Materi -->
+            <div class="flex justify-center gap-3">
+                <button onclick="switchMateriSubTab('kesebangunan')" id="materiTab-kesebangunan" class="px-5 py-2.5 rounded-xl bg-amber-400 text-slate-950 font-bold text-sm shadow-lg transition-all">
+                    1. Kesebangunan ($\sim$)
+                </button>
+                <button onclick="switchMateriSubTab('kekongruenan')" id="materiTab-kekongruenan" class="px-5 py-2.5 rounded-xl bg-indigo-900/80 text-white font-bold text-sm border border-indigo-700 hover:bg-indigo-800 transition-all">
+                    2. Kekongruenan ($\cong$)
+                </button>
+                <button onclick="switchMateriSubTab('aplikasi')" id="materiTab-aplikasi" class="px-5 py-2.5 rounded-xl bg-indigo-900/80 text-white font-bold text-sm border border-indigo-700 hover:bg-indigo-800 transition-all">
+                    3. Aplikasi Bayangan
+                </button>
+            </div>
+
+            <!-- Sub Tab Content 1: Kesebangunan -->
+            <div id="subContent-kesebangunan" class="space-y-6">
+                <div class="glass-card p-6 md:p-8 rounded-3xl border-indigo-500/30 space-y-6">
+                    <div class="flex items-center gap-3 border-b border-indigo-800/60 pb-4">
+                        <div class="w-10 h-10 rounded-xl bg-amber-400/20 text-amber-300 flex items-center justify-center text-xl">
+                            <i class="fa-solid fa-[#]">~</i>
+                        </div>
+                        <div>
+                            <h3 class="text-2xl font-bold text-amber-300">Konsep Kesebangunan (Similarity)</h3>
+                            <p class="text-xs text-slate-300">Dua bangun datar dikatakan sebangun jika memiliki BENTUK SAMA, meski UKURAN BERBEDA.</p>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="space-y-3 text-slate-200 text-sm">
+                            <h4 class="font-bold text-indigo-300 uppercase text-xs tracking-wider">Syarat Dua Bangun Sebangun:</h4>
+                            <ul class="space-y-2 list-disc list-inside bg-indigo-950/60 p-4 rounded-2xl border border-indigo-800">
+                                <li><strong class="text-amber-300">Sudut-sudut yang bersesuaian SAMABESAR.</strong></li>
+                                <li><strong class="text-amber-300">Sisi-sisi yang bersesuaian MEMILIKI PERBANDINGAN SENILAI ($k$).</strong></li>
+                            </ul>
+                            <div class="p-4 rounded-2xl bg-amber-400/10 border border-amber-400/30 text-amber-200 text-xs">
+                                <i class="fa-solid fa-lightbulb"></i> <strong>Contoh Nyata:</strong> Pasfoto $2\times 3$, $3\times 4$, $4\times 6$, atau miniatur mobil dengan mobil asli.
+                            </div>
+                        </div>
+
+                        <!-- Interactive Scale Simulator Tool -->
+                        <div class="p-5 rounded-2xl bg-slate-950/70 border border-indigo-700 flex flex-col justify-between space-y-4">
+                            <h4 class="text-xs font-bold text-amber-300 uppercase tracking-wider flex items-center gap-2">
+                                <i class="fa-solid fa-sliders"></i> Simulasi Faktor Skala ($k$) Interaktif
+                            </h4>
+
+                            <!-- Canvas Visualizer -->
+                            <div class="w-full h-44 bg-indigo-950/80 rounded-xl border border-indigo-800 flex items-center justify-center relative overflow-hidden">
+                                <svg id="similaritySvg" class="w-full h-full" viewBox="0 0 300 150">
+                                    <!-- Base Triangle A -->
+                                    <polygon points="20,120 80,120 50,70" fill="rgba(99, 102, 241, 0.4)" stroke="#818cf8" stroke-width="2"/>
+                                    <text x="50" y="135" text-anchor="middle" fill="#818cf8" font-size="10" font-weight="bold">Segitiga A (Sisi: 6 cm)</text>
+                                    
+                                    <!-- Scaled Triangle B -->
+                                    <polygon id="scaledTriangle" points="150,120 230,120 190,53.3" fill="rgba(245, 158, 11, 0.4)" stroke="#f59e0b" stroke-width="2"/>
+                                    <text id="scaledText" x="190" y="135" text-anchor="middle" fill="#f59e0b" font-size="10" font-weight="bold">Segitiga B (Sisi: 8 cm)</text>
+                                </svg>
+                            </div>
+
+                            <!-- Slider Controller -->
+                            <div class="space-y-2">
+                                <div class="flex justify-between text-xs font-bold">
+                                    <span class="text-slate-300">Faktor Skala ($k$):</span>
+                                    <span class="text-amber-300 font-mono text-sm" id="scaleFactorVal">1.33x</span>
+                                </div>
+                                <input type="range" id="scaleSlider" min="0.5" max="2.0" step="0.1" value="1.33" oninput="updateSimilaritySim(this.value)" class="w-full accent-amber-400 cursor-pointer">
+                                <div class="flex justify-between text-[10px] text-slate-400">
+                                    <span>Mengecil ($k < 1$)</span>
+                                    <span>Sama ($k = 1$)</span>
+                                    <span>Membesar ($k > 1$)</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sub Tab Content 2: Kekongruenan -->
+            <div id="subContent-kekongruenan" class="hidden space-y-6">
+                <div class="glass-card p-6 md:p-8 rounded-3xl border-indigo-500/30 space-y-6">
+                    <div class="flex items-center gap-3 border-b border-indigo-800/60 pb-4">
+                        <div class="w-10 h-10 rounded-xl bg-indigo-500/20 text-indigo-300 flex items-center justify-center text-xl font-bold">
+                            $\cong$
+                        </div>
+                        <div>
+                            <h3 class="text-2xl font-bold text-indigo-300">Konsep Kekongruenan (Congruence)</h3>
+                            <p class="text-xs text-slate-300">Dua bangun datar dikatakan kongruen jika memiliki BENTUK dan UKURAN PERSIS SAMA ($k = 1$).</p>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div class="p-5 rounded-2xl bg-indigo-950/60 border border-indigo-800 space-y-2">
+                            <div class="w-8 h-8 rounded-lg bg-amber-400 text-slate-950 flex items-center justify-center font-bold text-xs">
+                                s-s-s
+                            </div>
+                            <h4 class="font-bold text-white text-base">Sisi - Sisi - Sisi</h4>
+                            <p class="text-xs text-slate-300">Ketiga pasangan sisi yang bersesuaian sama panjang.</p>
+                        </div>
+
+                        <div class="p-5 rounded-2xl bg-indigo-950/60 border border-indigo-800 space-y-2">
+                            <div class="w-8 h-8 rounded-lg bg-indigo-400 text-slate-950 flex items-center justify-center font-bold text-xs">
+                                s-sd-s
+                            </div>
+                            <h4 class="font-bold text-white text-base">Sisi - Sudut - Sisi</h4>
+                            <p class="text-xs text-slate-300">Dua sisi sama panjang dan sudut yang diapitnya sama besar.</p>
+                        </div>
+
+                        <div class="p-5 rounded-2xl bg-indigo-950/60 border border-indigo-800 space-y-2">
+                            <div class="w-8 h-8 rounded-lg bg-emerald-400 text-slate-950 flex items-center justify-center font-bold text-xs">
+                                sd-s-sd
+                            </div>
+                            <h4 class="font-bold text-white text-base">Sudut - Sisi - Sudut</h4>
+                            <p class="text-xs text-slate-300">Dua sudut sama besar dan sisi di antara kedua sudut sama panjang.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sub Tab Content 3: Aplikasi Bayangan -->
+            <div id="subContent-aplikasi" class="hidden space-y-6">
+                <div class="glass-card p-6 md:p-8 rounded-3xl border-indigo-500/30 space-y-6">
+                    <div class="flex items-center gap-3 border-b border-indigo-800/60 pb-4">
+                        <div class="w-10 h-10 rounded-xl bg-emerald-400/20 text-emerald-300 flex items-center justify-center text-xl">
+                            <i class="fa-solid fa-tree"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-2xl font-bold text-emerald-300">Aplikasi Nyata: Menghitung Tinggi Pohon</h3>
+                            <p class="text-xs text-slate-300">Menghitung tinggi objek tinggi dengan menggunakan konsep perbandingan kesebangunan bayangan.</p>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 items-center">
+                        <div class="space-y-4 text-sm text-slate-200">
+                            <p>
+                                Diketahui siswa bernama Andi (Tinggi $150\text{ cm}$) memiliki panjang bayangan $200\text{ cm}$. Pada saat yang sama, bayangan pohon di sampingnya adalah $600\text{ cm}$. Berapakah tinggi pohon tersebut?
+                            </p>
+                            <div class="p-4 rounded-2xl bg-indigo-950/80 border border-indigo-800 font-mono text-xs space-y-1">
+                                <p class="text-amber-300 font-bold">\frac{\text{Tinggi Pohon}}{\text{Tinggi Andi}} = \frac{\text{Bayangan Pohon}}{\text{Bayangan Andi}}</p>
+                                <p>\frac{T}{150} = \frac{600}{200}</p>
+                                <p>T = 3 \times 150 = 450\text{ cm} = 4,5\text{ m}</p>
+                            </div>
+                        </div>
+
+                        <div class="p-4 rounded-2xl bg-slate-950 border border-emerald-500/40 text-center space-y-2">
+                            <div class="text-amber-400 text-4xl"><i class="fa-solid fa-sun animate-spin" style="animation-duration: 20s;"></i></div>
+                            <h4 class="text-emerald-300 font-bold text-sm">Prinsip Sinar Matahari Sejajar</h4>
+                            <p class="text-xs text-slate-300">Sinar matahari membentuk sudut elevasi yang sama pada objek berdekatan, menciptakan segitiga siku-siku sebangun!</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </section>
+
+        <!-- ================= TAB 4: KUIS INTERAKTIF ================= -->
+        <section id="tab-kuis" class="tab-content hidden space-y-6 py-4">
+            
+            <div class="text-center max-w-xl mx-auto space-y-2">
+                <h2 class="text-3xl md:text-4xl font-bold text-white">Kuis Kesebangunan SMP</h2>
+                <p class="text-slate-300">Uji pemahamanmu dan dapatkan skor terbaik serta feedback suara pria!</p>
+            </div>
+
+            <!-- Quiz Main Container -->
+            <div class="max-w-3xl mx-auto glass-card rounded-3xl p-6 md:p-8 border-indigo-500/30 relative">
+                
+                <!-- Quiz Header Progress -->
+                <div id="quizHeader" class="flex items-center justify-between border-b border-indigo-800/60 pb-4 mb-6">
+                    <div>
+                        <span class="text-xs font-bold text-indigo-300 uppercase tracking-wider">Pertanyaan</span>
+                        <h4 class="text-xl font-bold text-amber-300" id="questionNumText">Soal 1 dari 5</h4>
+                    </div>
+                    <div class="flex items-center gap-2 bg-indigo-950/80 px-4 py-2 rounded-xl border border-indigo-700/50">
+                        <i class="fa-solid fa-star text-amber-400"></i>
+                        <span class="text-sm font-bold text-white">Skor: <span id="currentScore">0</span></span>
+                    </div>
+                </div>
+
+                <!-- Quiz Progress Bar -->
+                <div class="w-full bg-slate-800 h-2.5 rounded-full overflow-hidden mb-6">
+                    <div id="quizProgressBar" class="bg-gradient-to-r from-amber-400 to-indigo-500 h-full transition-all duration-300" style="width: 20%;"></div>
+                </div>
+
+                <!-- Question Text -->
+                <div id="quizBody" class="space-y-6">
+                    <h3 id="questionText" class="text-xl md:text-2xl font-bold text-white leading-snug">
+                        Loading pertanyaan...
+                    </h3>
+
+                    <!-- Options Container -->
+                    <div id="optionsContainer" class="grid grid-cols-1 gap-3">
+                        <!-- Rendered by JS -->
+                    </div>
+                </div>
+
+                <!-- Feedback Toast -->
+                <div id="quizFeedback" class="hidden mt-6 p-4 rounded-2xl text-center font-bold text-base transition-all"></div>
+
+                <!-- Next Button -->
+                <div class="mt-6 flex justify-end">
+                    <button id="nextQuestionBtn" onclick="nextQuestion()" class="hidden px-6 py-3 rounded-xl bg-amber-400 hover:bg-amber-300 text-slate-950 font-extrabold text-base shadow-lg transition-all items-center gap-2">
+                        <span>Soal Berikutnya</span> <i class="fa-solid fa-arrow-right"></i>
+                    </button>
+                </div>
+
+                <!-- Quiz Result Container (Hidden by default) -->
+                <div id="quizResultView" class="hidden text-center space-y-6 py-6">
+                    <div class="w-24 h-24 mx-auto rounded-full bg-amber-400/20 border-2 border-amber-400 flex items-center justify-center text-amber-300 text-5xl animate-bounce">
+                        <i class="fa-solid fa-trophy"></i>
+                    </div>
+                    <div class="space-y-2">
+                        <h3 class="text-3xl font-extrabold text-white">Luar Biasa! Kuis Selesai!</h3>
+                        <p class="text-slate-300 text-base">Kamu telah menyelesaikan Kuis Matematika Kesebangunan & Kekongruenan.</p>
+                    </div>
+
+                    <div class="p-6 rounded-2xl bg-indigo-950/60 border border-indigo-800 max-w-sm mx-auto space-y-2">
+                        <div class="text-xs text-indigo-300 font-bold uppercase">Skor Akhir Kamu</div>
+                        <div class="text-5xl font-black text-amber-300" id="finalScoreText">100</div>
+                        <div id="starsRating" class="text-2xl text-amber-400 pt-2">
+                            <i class="fa-solid fa-star"></i>
+                            <i class="fa-solid fa-star"></i>
+                            <i class="fa-solid fa-star"></i>
+                        </div>
+                    </div>
+
+                    <p id="resultMessage" class="text-lg font-semibold text-emerald-300 max-w-md mx-auto">
+                        Hebat sekali! Pemahaman geometri SMP kamu sangat mantap!
+                    </p>
+
+                    <div class="flex items-center justify-center gap-4 pt-2">
+                        <button onclick="restartQuiz()" class="px-6 py-3 rounded-xl bg-amber-400 hover:bg-amber-300 text-slate-950 font-extrabold text-base transition-all flex items-center gap-2">
+                            <i class="fa-solid fa-rotate-right"></i> Coba Lagi
+                        </button>
+                        <button onclick="switchTab('dragdrop')" class="px-6 py-3 rounded-xl bg-indigo-800 hover:bg-indigo-700 text-white font-bold text-base transition-all flex items-center gap-2">
+                            <i class="fa-solid fa-puzzle-piece"></i> Main Drag & Drop
+                        </button>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- ================= TAB 5: DRAG AND DROP ================= -->
+        <section id="tab-dragdrop" class="tab-content hidden space-y-6 py-4">
+            
+            <div class="text-center max-w-2xl mx-auto space-y-2">
+                <h2 class="text-3xl md:text-4xl font-bold text-white">Klasifikasi Pasangan Bangun Datar</h2>
+                <p class="text-slate-300">
+                    Tarik (drag) atau klik item pasangan bangun di bawah, lalu tempatkan ke dalam kategori yang tepat: <strong class="text-amber-300">Kongruen</strong>, <strong class="text-indigo-300">Sebangun</strong>, atau <strong class="text-rose-300">Bukan Sebangun</strong>.
+                </p>
+            </div>
+
+            <!-- Game Control Bar -->
+            <div class="flex justify-between items-center max-w-5xl mx-auto">
+                <div class="text-sm font-bold text-amber-300 bg-amber-400/10 px-4 py-2 rounded-xl border border-amber-400/20">
+                    <i class="fa-solid fa-hand-pointer"></i> Pasangkan 6 Kartu Bangun Datar
+                </div>
+                <button onclick="resetDragDrop()" class="px-4 py-2 rounded-xl bg-indigo-900/80 hover:bg-indigo-800 border border-indigo-700 text-white text-xs font-bold transition-all flex items-center gap-2">
+                    <i class="fa-solid fa-arrows-rotate"></i> Reset Game
+                </button>
+            </div>
+
+            <!-- Draggable Item Source Cards -->
+            <div class="glass-card p-5 rounded-2xl border-indigo-800/60 max-w-5xl mx-auto">
+                <h4 class="text-xs font-bold uppercase tracking-wider text-indigo-300 mb-3">Pilihan Kartu Pasangan Bangun:</h4>
+                <div id="shapeSourceContainer" class="flex flex-wrap items-center justify-center gap-3 min-h-[70px]">
+                    <!-- Rendered by JS -->
+                </div>
+            </div>
+
+            <!-- 3 Classification Drop Target Zones -->
+            <div class="max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-4" id="dropZonesContainer">
+                
+                <!-- Zone 1: Kongruen -->
+                <div id="zone-kongruen" class="drop-zone p-5 rounded-2xl glass-card border-2 border-dashed border-emerald-500/60 bg-emerald-950/10 flex flex-col items-center justify-start min-h-[200px] transition-all">
+                    <div class="w-full flex items-center justify-between text-xs font-bold text-emerald-300 border-b border-emerald-800/50 pb-2 mb-3">
+                        <span><i class="fa-solid fa-equals"></i> Kategori: KONGRUEN</span>
+                    </div>
+                    <div class="zone-items w-full space-y-2"></div>
+                </div>
+
+                <!-- Zone 2: Sebangun (Bukan Kongruen) -->
+                <div id="zone-sebangun" class="drop-zone p-5 rounded-2xl glass-card border-2 border-dashed border-amber-500/60 bg-amber-950/10 flex flex-col items-center justify-start min-h-[200px] transition-all">
+                    <div class="w-full flex items-center justify-between text-xs font-bold text-amber-300 border-b border-amber-800/50 pb-2 mb-3">
+                        <span><i class="fa-solid fa-up-right-and-down-left-from-center"></i> Kategori: SEBANGUN</span>
+                    </div>
+                    <div class="zone-items w-full space-y-2"></div>
+                </div>
+
+                <!-- Zone 3: Bukan Sebangun -->
+                <div id="zone-bukan" class="drop-zone p-5 rounded-2xl glass-card border-2 border-dashed border-rose-500/60 bg-rose-950/10 flex flex-col items-center justify-start min-h-[200px] transition-all">
+                    <div class="w-full flex items-center justify-between text-xs font-bold text-rose-300 border-b border-rose-800/50 pb-2 mb-3">
+                        <span><i class="fa-solid fa-xmark"></i> BUKAN SEBANGUN</span>
+                    </div>
+                    <div class="zone-items w-full space-y-2"></div>
+                </div>
+
+            </div>
+
+            <!-- Success Celebration Dialog -->
+            <div id="dragSuccessBanner" class="hidden glass-card p-6 rounded-2xl border-emerald-500/50 bg-emerald-950/40 text-center max-w-2xl mx-auto space-y-3 animate-bounce">
+                <div class="text-4xl text-emerald-400"><i class="fa-solid fa-circle-check"></i></div>
+                <h3 class="text-2xl font-bold text-white">Luar Biasa! Semua Pengelompokan Benar!</h3>
+                <p class="text-slate-300 text-sm">Kamu sudah menguasai perbedaan antara bangun yang Kongruen, Sebangun, dan Tidak Sebangun!</p>
+            </div>
+
+        </section>
+
+        <!-- ================= TAB 6: TENTANG ================= -->
+        <section id="tab-tentang" class="tab-content hidden space-y-8 py-4">
+            
+            <div class="max-w-4xl mx-auto glass-card rounded-3xl p-6 md:p-10 border-indigo-500/30 space-y-8">
+                
+                <!-- Profile Header -->
+                <div class="flex flex-col md:flex-row items-center gap-6 text-center md:text-left border-b border-indigo-800/60 pb-8">
+                    <div class="w-32 h-32 rounded-3xl bg-gradient-to-tr from-amber-400 via-indigo-600 to-purple-600 p-1 shadow-2xl flex-shrink-0">
+                        <div class="w-full h-full bg-slate-950 rounded-[22px] flex items-center justify-center text-amber-300 text-5xl">
+                            <i class="fa-solid fa-user-gear"></i>
+                        </div>
+                    </div>
+                    <div class="space-y-2">
+                        <span class="px-3 py-1 rounded-full bg-amber-400/20 border border-amber-400/30 text-amber-300 text-xs font-extrabold uppercase">
+                            Pengembang Media Pembelajaran Matematika
+                        </span>
+                        <h2 class="text-3xl md:text-4xl font-extrabold text-white">Deni Candra Pamungkas</h2>
+                        <p class="text-lg text-indigo-200 font-semibold">Guru Matematika Sekolah Menengah Pertama (SMP)</p>
+                        <p class="text-sm text-slate-300 max-w-xl">
+                            Pengembang media pembelajaran matematika berbasis web interaktif untuk menciptakan iklim belajar geometri SMP yang visual, intuitif, dan bermakna.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Info Grid -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="p-5 rounded-2xl bg-indigo-950/50 border border-indigo-800/60 space-y-2">
+                        <h4 class="text-amber-300 font-bold text-base flex items-center gap-2">
+                            <i class="fa-solid fa-book-open"></i> Mata Pelajaran
+                        </h4>
+                        <p class="text-slate-200 text-sm">
+                            Matematika SMP Kelas IX (Fase D)
+                        </p>
+                    </div>
+
+                    <div class="p-5 rounded-2xl bg-indigo-950/50 border border-indigo-800/60 space-y-2">
+                        <h4 class="text-amber-300 font-bold text-base flex items-center gap-2">
+                            <i class="fa-solid fa-shapes"></i> Topik Pembelajaran
+                        </h4>
+                        <p class="text-slate-200 text-sm">
+                            Kesebangunan dan Kekongruenan Bangun Datar
+                        </p>
+                    </div>
+
+                    <div class="p-5 rounded-2xl bg-indigo-950/50 border border-indigo-800/60 space-y-2">
+                        <h4 class="text-amber-300 font-bold text-base flex items-center gap-2">
+                            <i class="fa-solid fa-laptop-code"></i> Teknologi Media
+                        </h4>
+                        <p class="text-slate-200 text-sm">
+                            HTML5, Tailwind CSS, JavaScript Vanilla, Canvas API & Web Speech API Synth.
+                        </p>
+                    </div>
+
+                    <div class="p-5 rounded-2xl bg-indigo-950/50 border border-indigo-800/60 space-y-2">
+                        <h4 class="text-amber-300 font-bold text-base flex items-center gap-2">
+                            <i class="fa-solid fa-bullseye text-amber-400"></i> Misi Pembelajaran
+                        </h4>
+                        <p class="text-slate-200 text-sm">
+                            Membantu siswa SMP memahami konsep abstrak geometri melalui visualisasi perbandingan rasio skala secara nyata.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Inspirational Quote -->
+                <div class="p-6 rounded-2xl bg-gradient-to-r from-amber-500/20 to-indigo-600/20 border border-amber-400/30 text-center space-y-2">
+                    <p class="text-white font-bold text-base">
+                        "Setiap konsep matematika yang terlihat rumit akan terasa mudah apabila kita menemukan sudut pandang visual yang tepat."
+                    </p>
+                    <p class="text-xs text-amber-300 font-semibold">— Deni Candra Pamungkas</p>
+                </div>
+
+            </div>
+
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="z-10 bg-slate-950/90 border-t border-indigo-900/60 py-6 px-4 text-center text-xs text-slate-400 space-y-2">
+        <p class="font-semibold text-slate-300">
+            Media Pembelajaran Interaktif Matematika SMP Kelas IX • Kesebangunan & Kekongruenan
+        </p>
+        <p>
+            Dirancang & Dikembangkan oleh <span class="text-amber-400 font-bold">Deni Candra Pamungkas</span>
+        </p>
+        <p class="text-slate-500">© 2026 GeoSpace IX. All Rights Reserved.</p>
+    </footer>
+
+    <script>
+        /* ==========================================================================
+           1. DATA KUIS MATHEMATICS (SMP Kelas IX)
+           ========================================================================== */
+        const quizQuestions = [
+            {
+                question: "Dua buah persegi panjang masing-masing berukuran 4 cm x 6 cm dan 8 cm x 12 cm. Apakah kedua persegi panjang tersebut sebangun?",
+                options: [
+                    "Sebangun, karena perbandingan panjang dan lebarnya sama (1 : 2)",
+                    "Tidak sebangun, karena ukurannya berbeda",
+                    "Kongruen, karena bentuknya sama",
+                    "Tidak dapat ditentukan tanpa mengukur sudut"
+                ],
+                answer: 0,
+                explanation: "Rasio lebar = 4/8 = 1/2. Rasio panjang = 6/12 = 1/2. Karena perbandingan sisi bersesuaian senilai (1:2) dan sudutnya siku-siku, maka kedua bangun SEBANGUN."
+            },
+            {
+                question: "Manakah dari syarat berikut yang BUKAN merupakan kriteria kekongruenan dua segitiga?",
+                options: [
+                    "Sisi - Sisi - Sisi (s-s-s)",
+                    "Sisi - Sudut - Sisi (s-sd-s)",
+                    "Sudut - Sudut - Sudut (sd-sd-sd)",
+                    "Sudut - Sisi - Sudut (sd-s-sd)"
+                ],
+                answer: 2,
+                explanation: "Kriteria Sudut-Sudut-Sudut (sd-sd-sd) HANYA membuktikan dua segitiga SEBANGUN, bukan KONGRUEN (karena ukurannya bisa saja diperbesar atau diperkecil)."
+            },
+            {
+                question: "Sebuah tiang bendera memiliki bayangan sepanjang 4 m. Pada saat yang sama, tongkat pramuka setinggi 1,5 m memiliki bayangan 2 m. Berapakah tinggi tiang bendera?",
+                options: [
+                    "2,0 meter",
+                    "3,0 meter",
+                    "4,5 meter",
+                    "5,0 meter"
+                ],
+                answer: 1,
+                explanation: "Gunakan perbandingan senilai: Tinggi Tiang / Tinggi Tongkat = Bayangan Tiang / Bayangan Tongkat => T / 1.5 = 4 / 2 => T / 1.5 = 2 => T = 3.0 meter."
+            },
+            {
+                question: "Segitiga ABC kongruen dengan segitiga DEF. Jika panjang AB = 6 cm, BC = 8 cm, dan AC = 10 cm, berapakah keliling segitiga DEF?",
+                options: [
+                    "12 cm",
+                    "20 cm",
+                    "24 cm",
+                    "48 cm"
+                ],
+                answer: 2,
+                explanation: "Karena segitiga ABC kongruen dengan DEF, maka ukuran sisi-sisinya persis sama. Keliling = 6 + 8 + 10 = 24 cm."
+            },
+            {
+                question: "Dua bangun datar dikatakan kongruen jika memenuhi syarat...",
+                options: [
+                    "Bentuk sama tetapi ukurannya berbeda",
+                    "Bentuk dan ukurannya persis sama",
+                    "Luasnya sama tetapi bentuknya berbeda",
+                    "Jumlah sudutnya sama 360 derajat"
+                ],
+                answer: 1,
+                explanation: "Syarat mutlak dua bangun kongruen adalah memiliki bentuk dan ukuran yang persis sama (rasio faktor skala k = 1)."
+            }
+        ];
+
+        let currentQuestionIdx = 0;
+        let score = 0;
+        let selectedOptionIdx = null;
+
+        /* ==========================================================================
+           2. DATA DRAG & DROP GAME
+           ========================================================================== */
+        const dragDropItems = [
+            { id: 1, title: "Pasfoto 2x3 & Pasfoto 4x6", category: "sebangun", icon: "fa-image" },
+            { id: 2, title: "Segitiga Siku-siku (3,4,5) & (3,4,5)", category: "kongruen", icon: "fa-play" },
+            { id: 3, title: "Persegi Sisi 5 cm & Persegi Sisi 10 cm", category: "sebangun", icon: "fa-square" },
+            { id: 4, title: "Lingkaran R=7 cm & Lingkaran R=7 cm", category: "kongruen", icon: "fa-circle" },
+            { id: 5, title: "Persegi Panjang 3x6 & Persegi Panjang 4x6", category: "bukan", icon: "fa-rectangle-ad" },
+            { id: 6, title: "Jajar Genjang A & B (Beda Sudut)", category: "bukan", icon: "fa-vector-square" }
+        ];
+
+        let userDropState = {}; // itemId -> category
+        let selectedClickItem = null;
+
+        /* ==========================================================================
+           3. WEB AUDIO API SYNTHESIZER & TEXT-TO-SPEECH (MALE VOICE)
+           ========================================================================== */
+        let soundEnabled = true;
+        let audioCtx = null;
+
+        function getAudioContext() {
+            if (!audioCtx) {
+                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            }
+            if (audioCtx.state === 'suspended') {
+                audioCtx.resume();
+            }
+            return audioCtx;
+        }
+
+        function toggleAudio() {
+            soundEnabled = !soundEnabled;
+            const soundIcon = document.getElementById('soundIcon');
+            if (soundEnabled) {
+                soundIcon.className = "fa-solid fa-volume-high";
+                playSoundEffect('click');
+            } else {
+                soundIcon.className = "fa-solid fa-volume-xmark text-rose-400";
+                if ('speechSynthesis' in window) {
+                    window.speechSynthesis.cancel();
+                }
+            }
+        }
+
+        /* Male Indonesian Voice Text-to-Speech */
+        function playVoiceFeedback(text) {
+            if (!soundEnabled) return;
+            if ('speechSynthesis' in window) {
+                window.speechSynthesis.cancel();
+                
+                const utterance = new SpeechSynthesisUtterance(text);
+                utterance.lang = 'id-ID';
+                utterance.rate = 0.95; // Artikulasi jelas
+                utterance.pitch = 0.85; // Frekuensi nada pria yang hangat & jelas
+                
+                const voices = window.speechSynthesis.getVoices();
+                const idVoices = voices.filter(v => v.lang.toLowerCase().includes('id'));
+                
+                // Prioritaskan profil suara pria
+                const maleVoice = idVoices.find(v => {
+                    const name = v.name.toLowerCase();
+                    return name.includes('male') || name.includes('pria') || name.includes('andika') || name.includes('ardi') || name.includes('david');
+                });
+                
+                if (maleVoice) {
+                    utterance.voice = maleVoice;
+                } else if (idVoices.length > 0) {
+                    utterance.voice = idVoices[0];
+                }
+                
+                window.speechSynthesis.speak(utterance);
+            }
+        }
+
+        function playSoundEffect(type) {
+            if (!soundEnabled) return;
+            try {
+                const ctx = getAudioContext();
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+                osc.connect(gain);
+                gain.connect(ctx.destination);
+
+                const now = ctx.currentTime;
+
+                if (type === 'click') {
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(450, now);
+                    osc.frequency.exponentialRampToValueAtTime(850, now + 0.07);
+                    gain.gain.setValueAtTime(0.15, now);
+                    gain.gain.exponentialRampToValueAtTime(0.01, now + 0.07);
+                    osc.start(now);
+                    osc.stop(now + 0.07);
+                } else if (type === 'correct') {
+                    osc.type = 'triangle';
+                    osc.frequency.setValueAtTime(523.25, now); // C5
+                    osc.frequency.setValueAtTime(659.25, now + 0.1); // E5
+                    osc.frequency.setValueAtTime(783.99, now + 0.2); // G5
+                    gain.gain.setValueAtTime(0.2, now);
+                    gain.gain.exponentialRampToValueAtTime(0.01, now + 0.4);
+                    osc.start(now);
+                    osc.stop(now + 0.4);
+                } else if (type === 'wrong') {
+                    osc.type = 'sawtooth';
+                    osc.frequency.setValueAtTime(220, now);
+                    osc.frequency.setValueAtTime(180, now + 0.15);
+                    gain.gain.setValueAtTime(0.2, now);
+                    gain.gain.exponentialRampToValueAtTime(0.01, now + 0.3);
+                    osc.start(now);
+                    osc.stop(now + 0.3);
+                } else if (type === 'victory') {
+                    [523.25, 659.25, 783.99, 1046.50].forEach((freq, idx) => {
+                        const o = ctx.createOscillator();
+                        const g = ctx.createGain();
+                        o.type = 'sine';
+                        o.frequency.setValueAtTime(freq, now + idx * 0.12);
+                        o.connect(g);
+                        g.connect(ctx.destination);
+                        g.gain.setValueAtTime(0.2, now + idx * 0.12);
+                        g.gain.exponentialRampToValueAtTime(0.01, now + idx * 0.12 + 0.3);
+                        o.start(now + idx * 0.12);
+                        o.stop(now + idx * 0.12 + 0.3);
+                    });
+                }
+            } catch (e) {
+                console.log("Audio play error:", e);
+            }
+        }
+
+        /* ==========================================================================
+           4. STARFIELD BACKGROUND ANIMATION
+           ========================================================================== */
+        function initStarfield() {
+            const canvas = document.getElementById('starfield');
+            const ctx = canvas.getContext('2d');
+            let stars = [];
+
+            function resize() {
+                canvas.width = window.innerWidth;
+                canvas.height = window.innerHeight;
+                createStars();
+            }
+
+            function createStars() {
+                stars = [];
+                const count = Math.floor((canvas.width * canvas.height) / 3200);
+                for (let i = 0; i < count; i++) {
+                    stars.push({
+                        x: Math.random() * canvas.width,
+                        y: Math.random() * canvas.height,
+                        radius: Math.random() * 1.5 + 0.5,
+                        alpha: Math.random(),
+                        speed: Math.random() * 0.02 + 0.005
+                    });
+                }
+            }
+
+            function animate() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                stars.forEach(star => {
+                    star.alpha += star.speed;
+                    if (star.alpha > 1 || star.alpha < 0) {
+                        star.speed = -star.speed;
+                    }
+                    ctx.beginPath();
+                    ctx.arc(star.x, star.y, star.radius, 0, Math.PI * 2);
+                    ctx.fillStyle = `rgba(255, 255, 255, ${Math.abs(star.alpha)})`;
+                    ctx.fill();
+                });
+                requestAnimationFrame(animate);
+            }
+
+            window.addEventListener('resize', resize);
+            resize();
+            animate();
+        }
+
+        /* ==========================================================================
+           5. NAVIGATION TAB SWITCHING
+           ========================================================================== */
+        function switchTab(tabId) {
+            playSoundEffect('click');
+
+            document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
+            const activeBtn = document.getElementById(`nav-${tabId}`);
+            if (activeBtn) activeBtn.classList.add('active');
+
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.add('hidden');
+                content.classList.remove('block');
+            });
+
+            const targetTab = document.getElementById(`tab-${tabId}`);
+            if (targetTab) {
+                targetTab.classList.remove('hidden');
+                targetTab.classList.add('block');
+            }
+
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        /* ==========================================================================
+           6. MATERI SUB TABS & INTERACTIVE SIMULATOR
+           ========================================================================== */
+        function switchMateriSubTab(subId) {
+            playSoundEffect('click');
+            
+            const btnKes = document.getElementById('materiTab-kesebangunan');
+            const btnKek = document.getElementById('materiTab-kekongruenan');
+            const btnAplikasi = document.getElementById('materiTab-aplikasi');
+
+            [btnKes, btnKek, btnAplikasi].forEach(b => {
+                b.className = "px-5 py-2.5 rounded-xl bg-indigo-900/80 text-white font-bold text-sm border border-indigo-700 hover:bg-indigo-800 transition-all";
+            });
+
+            document.getElementById('subContent-kesebangunan').classList.add('hidden');
+            document.getElementById('subContent-kekongruenan').classList.add('hidden');
+            document.getElementById('subContent-aplikasi').classList.add('hidden');
+
+            if (subId === 'kesebangunan') {
+                btnKes.className = "px-5 py-2.5 rounded-xl bg-amber-400 text-slate-950 font-bold text-sm shadow-lg transition-all";
+                document.getElementById('subContent-kesebangunan').classList.remove('hidden');
+            } else if (subId === 'kekongruenan') {
+                btnKek.className = "px-5 py-2.5 rounded-xl bg-indigo-500 text-white font-bold text-sm shadow-lg transition-all";
+                document.getElementById('subContent-kekongruenan').classList.remove('hidden');
+            } else {
+                btnAplikasi.className = "px-5 py-2.5 rounded-xl bg-emerald-400 text-slate-950 font-bold text-sm shadow-lg transition-all";
+                document.getElementById('subContent-aplikasi').classList.remove('hidden');
+            }
+        }
+
+        function updateSimilaritySim(val) {
+            const factor = parseFloat(val);
+            document.getElementById('scaleFactorVal').innerText = factor.toFixed(2) + "x";
+
+            // Base triangle B coords at factor 1.0: points="150,120 210,120 180,70"
+            const baseW = 60 * factor;
+            const baseH = 50 * factor;
+
+            const x1 = 150;
+            const y1 = 120;
+            const x2 = x1 + baseW;
+            const y2 = y1;
+            const x3 = x1 + (baseW / 2);
+            const y3 = y1 - baseH;
+
+            const scaledTri = document.getElementById('scaledTriangle');
+            scaledTri.setAttribute('points', `${x1},${y1} ${x2},${y2} ${x3},${y3}`);
+
+            const sideCm = (6 * factor).toFixed(1);
+            document.getElementById('scaledText').setAttribute('x', x1 + (baseW / 2));
+            document.getElementById('scaledText').textContent = `Segitiga B (Sisi: ${sideCm} cm)`;
+        }
+
+        /* ==========================================================================
+           7. KUIS INTERAKTIF ENGINE
+           ========================================================================== */
+        function renderQuestion() {
+            const q = quizQuestions[currentQuestionIdx];
+            document.getElementById('questionNumText').innerText = `Soal ${currentQuestionIdx + 1} dari ${quizQuestions.length}`;
+            document.getElementById('questionText').innerText = q.question;
+            document.getElementById('currentScore').innerText = score;
+
+            const progressPct = ((currentQuestionIdx + 1) / quizQuestions.length) * 100;
+            document.getElementById('quizProgressBar').style.width = `${progressPct}%`;
+
+            const container = document.getElementById('optionsContainer');
+            container.innerHTML = '';
+            selectedOptionIdx = null;
+
+            document.getElementById('quizFeedback').className = "hidden mt-6 p-4 rounded-2xl text-center font-bold text-base transition-all";
+            document.getElementById('nextQuestionBtn').classList.add('hidden');
+
+            q.options.forEach((opt, idx) => {
+                const btn = document.createElement('button');
+                btn.className = "quiz-option-btn w-full p-4 rounded-2xl bg-indigo-950/60 hover:bg-indigo-900 border border-indigo-800 text-left text-base text-white font-semibold transition-all flex items-center justify-between group";
+                btn.onclick = () => selectQuizOption(idx);
+                btn.innerHTML = `
+                    <div class="flex items-center gap-3">
+                        <span class="w-8 h-8 rounded-xl bg-indigo-900 border border-indigo-700 flex items-center justify-center text-xs font-bold text-amber-300 group-hover:bg-amber-400 group-hover:text-slate-950 transition-colors">
+                            ${String.fromCharCode(65 + idx)}
+                        </span>
+                        <span>${opt}</span>
+                    </div>
+                    <i class="fa-regular fa-circle text-slate-500 text-lg group-hover:text-amber-400"></i>
+                `;
+                container.appendChild(btn);
+            });
+        }
+
+        function selectQuizOption(optionIdx) {
+            if (selectedOptionIdx !== null) return;
+            selectedOptionIdx = optionIdx;
+
+            const q = quizQuestions[currentQuestionIdx];
+            const optionBtns = document.querySelectorAll('.quiz-option-btn');
+            const feedback = document.getElementById('quizFeedback');
+
+            if (optionIdx === q.answer) {
+                playSoundEffect('correct');
+                playVoiceFeedback("Kamu Hebat!");
+                
+                score += 20;
+                document.getElementById('currentScore').innerText = score;
+
+                optionBtns[optionIdx].classList.remove('bg-indigo-950/60', 'border-indigo-800');
+                optionBtns[optionIdx].classList.add('bg-emerald-900/60', 'border-emerald-500', 'text-emerald-200');
+                
+                feedback.innerHTML = `<i class="fa-solid fa-circle-check"></i> Jawaban Kamu Benar! <br><span class="text-xs font-normal">${q.explanation}</span>`;
+                feedback.className = "mt-6 p-4 rounded-2xl text-center font-bold text-sm bg-emerald-950/80 border border-emerald-500 text-emerald-200 block animate-fade-in";
+            } else {
+                playSoundEffect('wrong');
+                playVoiceFeedback("Coba Lagi!");
+
+                optionBtns[optionIdx].classList.remove('bg-indigo-950/60', 'border-indigo-800');
+                optionBtns[optionIdx].classList.add('bg-rose-900/60', 'border-rose-500', 'text-rose-200');
+
+                optionBtns[q.answer].classList.remove('bg-indigo-950/60', 'border-indigo-800');
+                optionBtns[q.answer].classList.add('bg-emerald-900/60', 'border-emerald-500', 'text-emerald-200');
+
+                feedback.innerHTML = `<i class="fa-solid fa-circle-xmark"></i> Kurang Tepat! <br><span class="text-xs font-normal">${q.explanation}</span>`;
+                feedback.className = "mt-6 p-4 rounded-2xl text-center font-bold text-sm bg-rose-950/80 border border-rose-500 text-rose-200 block animate-fade-in";
+            }
+
+            optionBtns.forEach(btn => btn.disabled = true);
+
+            const nextBtn = document.getElementById('nextQuestionBtn');
+            nextBtn.classList.remove('hidden');
+            nextBtn.classList.add('flex');
+        }
+
+        function nextQuestion() {
+            playSoundEffect('click');
+            currentQuestionIdx++;
+            if (currentQuestionIdx < quizQuestions.length) {
+                renderQuestion();
+            } else {
+                showQuizResult();
+            }
+        }
+
+        function showQuizResult() {
+            playSoundEffect('victory');
+
+            document.getElementById('quizHeader').classList.add('hidden');
+            document.getElementById('quizProgressBar').parentElement.classList.add('hidden');
+            document.getElementById('quizBody').classList.add('hidden');
+            document.getElementById('quizFeedback').classList.add('hidden');
+            document.getElementById('nextQuestionBtn').classList.add('hidden');
+
+            const resultView = document.getElementById('quizResultView');
+            resultView.classList.remove('hidden');
+
+            document.getElementById('finalScoreText').innerText = score;
+
+            const starsContainer = document.getElementById('starsRating');
+            let starsHTML = '';
+            let msg = '';
+
+            if (score === 100) {
+                starsHTML = '<i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>';
+                msg = "Sempurna! Kamu Master Geometri Sejati!";
+            } else if (score >= 60) {
+                starsHTML = '<i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-regular fa-star"></i>';
+                msg = "Kerja Bagus! Pemahaman Kesebangunan kamu sudah baik!";
+            } else {
+                starsHTML = '<i class="fa-solid fa-star"></i><i class="fa-regular fa-star"></i><i class="fa-regular fa-star"></i>';
+                msg = "Tetap Semangat! Pelajari lagi materi dan coba sekali lagi!";
+            }
+
+            starsContainer.innerHTML = starsHTML;
+            document.getElementById('resultMessage').innerText = msg;
+        }
+
+        function restartQuiz() {
+            playSoundEffect('click');
+            currentQuestionIdx = 0;
+            score = 0;
+
+            document.getElementById('quizHeader').classList.remove('hidden');
+            document.getElementById('quizProgressBar').parentElement.classList.remove('hidden');
+            document.getElementById('quizBody').classList.remove('hidden');
+            document.getElementById('quizResultView').classList.add('hidden');
+
+            renderQuestion();
+        }
+
+        /* ==========================================================================
+           8. DRAG AND DROP ENGINE
+           ========================================================================== */
+        function initDragDrop() {
+            renderDragDropBoard();
+        }
+
+        function renderDragDropBoard() {
+            const sourceContainer = document.getElementById('shapeSourceContainer');
+            sourceContainer.innerHTML = '';
+
+            // Render Zones reset
+            document.querySelectorAll('#dropZonesContainer .zone-items').forEach(z => z.innerHTML = '');
+
+            dragDropItems.forEach(item => {
+                const assignedCategory = userDropState[item.id];
+
+                const card = document.createElement('div');
+                card.draggable = true;
+                card.id = `drag-item-${item.id}`;
+                card.className = `drag-item px-4 py-2.5 rounded-xl bg-indigo-900/90 border border-indigo-700 text-white font-bold text-xs shadow-md flex items-center gap-2 transform active:scale-95 transition-all`;
+                if (selectedClickItem === item.id) {
+                    card.classList.add('ring-2', 'ring-amber-300', 'scale-105');
+                }
+
+                card.innerHTML = `<i class="fa-solid ${item.icon} text-amber-400"></i> <span>${item.title}</span>`;
+
+                card.addEventListener('dragstart', (e) => {
+                    e.dataTransfer.setData('text/plain', item.id);
+                    card.classList.add('opacity-50');
+                });
+                card.addEventListener('dragend', () => {
+                    card.classList.remove('opacity-50');
+                });
+
+                card.onclick = () => {
+                    playSoundEffect('click');
+                    selectedClickItem = (selectedClickItem === item.id) ? null : item.id;
+                    renderDragDropBoard();
+                };
+
+                if (!assignedCategory) {
+                    sourceContainer.appendChild(card);
+                } else {
+                    const zoneTarget = document.querySelector(`#zone-${assignedCategory} .zone-items`);
+                    if (zoneTarget) zoneTarget.appendChild(card);
+                }
+            });
+
+            // Set up Zone listeners
+            ['kongruen', 'sebangun', 'bukan'].forEach(cat => {
+                const zoneEl = document.getElementById(`zone-${cat}`);
+                zoneEl.ondragover = (e) => {
+                    e.preventDefault();
+                    zoneEl.classList.add('over');
+                };
+                zoneEl.ondragleave = () => zoneEl.classList.remove('over');
+                zoneEl.ondrop = (e) => {
+                    e.preventDefault();
+                    zoneEl.classList.remove('over');
+                    const itemId = parseInt(e.dataTransfer.getData('text/plain'));
+                    placeItemInZone(itemId, cat);
+                };
+                zoneEl.onclick = () => {
+                    if (selectedClickItem !== null) {
+                        placeItemInZone(selectedClickItem, cat);
+                        selectedClickItem = null;
+                    }
+                };
+            });
+
+            checkDragDropCompletion();
+        }
+
+        function placeItemInZone(itemId, category) {
+            userDropState[itemId] = category;
+            playSoundEffect('click');
+            renderDragDropBoard();
+        }
+
+        function resetDragDrop() {
+            playSoundEffect('click');
+            userDropState = {};
+            selectedClickItem = null;
+            document.getElementById('dragSuccessBanner').classList.add('hidden');
+            renderDragDropBoard();
+        }
+
+        function checkDragDropCompletion() {
+            const placedCount = Object.keys(userDropState).length;
+            if (placedCount < dragDropItems.length) return;
+
+            const allCorrect = dragDropItems.every(item => userDropState[item.id] === item.category);
+
+            if (allCorrect) {
+                playSoundEffect('victory');
+                document.getElementById('dragSuccessBanner').classList.remove('hidden');
+            }
+        }
+
+        /* ==========================================================================
+           9. INITIALIZATION
+           ========================================================================== */
+        window.onload = function() {
+            initStarfield();
+            renderQuestion();
+            initDragDrop();
+
+            if ('speechSynthesis' in window) {
+                window.speechSynthesis.getVoices();
+                if (window.speechSynthesis.onvoiceschanged !== undefined) {
+                    window.speechSynthesis.onvoiceschanged = function() {
+                        window.speechSynthesis.getVoices();
+                    };
+                }
+            }
+        };
+    </script>
+</body>
+</html>
